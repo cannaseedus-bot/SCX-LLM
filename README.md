@@ -96,6 +96,8 @@ So the `.b64` file is only a source-control transport representation, not a form
 
 See [`docs/SCXMU_ARCHITECTURE.md`](docs/SCXMU_ARCHITECTURE.md).
 
+For deterministic SCX4 loader behavior and tiny-file hex anatomy, see [`docs/SCX4_LOADER_REFERENCE.md`](docs/SCX4_LOADER_REFERENCE.md).
+
 ---
 
 ## 🧪 Testing
