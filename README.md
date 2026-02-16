@@ -74,9 +74,29 @@ npm run verify
 
 ---
 
+
+## 🧾 SCX4 spec binary vs repository `.b64` text asset
+
+`SCX4` is still a **binary container format** by specification (`magic`, fixed header, section directory, and binary section payloads).
+
+In this repository, the demo model is stored as `demo/model.scx4.b64` for GitHub-friendly review/diff behavior (text instead of a committed raw binary blob).
+
+What this means in practice:
+
+- **Spec/runtime truth**: SCX4 remains binary on disk/in memory for parsing and execution.
+- **Repo storage convenience**: the demo checks in a Base64 text wrapper of the same bytes.
+- **Demo loader behavior**: `demo/scx4-loader.js` fetches `.b64`, decodes it back to the original bytes, then parses it exactly as SCX4 binary.
+- **Build/verify tooling**: `scripts/build-scx4.js` and `scripts/verify-scx4.js` operate on true binary `.scx4` files.
+
+So the `.b64` file is only a source-control transport representation, not a format change to SCX4 itself.
+
+---
+
 ## 📁 Repository Layout
 
 See [`docs/SCXMU_ARCHITECTURE.md`](docs/SCXMU_ARCHITECTURE.md).
+
+For deterministic SCX4 loader behavior and tiny-file hex anatomy, see [`docs/SCX4_LOADER_REFERENCE.md`](docs/SCX4_LOADER_REFERENCE.md).
 
 ---
 
