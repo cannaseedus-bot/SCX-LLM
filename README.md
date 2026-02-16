@@ -74,6 +74,13 @@ npm run verify
 
 ---
 
+## 📚 Whitepaper and Standards
+
+- Whitepaper v1.0: [`docs/SCXMU_WHITEPAPER_V1.md`](docs/SCXMU_WHITEPAPER_V1.md)
+- RFC draft (normative requirements): [`docs/SCXMU_RFC_DRAFT.md`](docs/SCXMU_RFC_DRAFT.md)
+
+---
+
 ## 📁 Repository Layout
 
 See [`docs/SCXMU_ARCHITECTURE.md`](docs/SCXMU_ARCHITECTURE.md).
