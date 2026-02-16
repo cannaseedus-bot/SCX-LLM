@@ -1,0 +1,17 @@
+{
+  "name": "scxmu",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "test": "vitest run",
+    "build:model": "node scripts/build-scx4.js",
+    "verify": "node scripts/verify-scx4.js"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "vite": "^5.0.0",
+    "vitest": "^1.0.0"
+  }
+}
