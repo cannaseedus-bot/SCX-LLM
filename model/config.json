@@ -1,0 +1,10 @@
+{
+  "format": "scx4",
+  "version": 1,
+  "layers": 16,
+  "hidden_size": 640,
+  "experts": 8,
+  "top_k": 2,
+  "quantization": "int4",
+  "tokenizer": "bpe"
+}
