@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://scxmu.dev/schemas/scxt.schema.json",
+  "title": "SCX-TP Program Graph",
+  "type": "object",
+  "required": ["version", "graph"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^1\\.[0-9]+$"
+    },
+    "graph": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["op", "src", "dst"],
+        "properties": {
+          "op": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 31
+          },
+          "src": {
+            "type": "string",
+            "minLength": 1
+          },
+          "dst": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
