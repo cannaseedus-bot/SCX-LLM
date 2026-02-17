@@ -1,18 +1,1504 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SCXµ Browser MoE Demo</title>
-    <link rel="stylesheet" href="./style.css" />
-  </head>
-  <body>
-    <main>
-      <h1>SCXµ MoE Browser Demo</h1>
-      <p id="status">Ready</p>
-      <button id="run" type="button">Run Inference</button>
-      <pre id="output">[]</pre>
-    </main>
-    <script type="module" src="./main.js"></script>
-  </body>
+<head>
+<meta charset="UTF-8" />
+<title>ASX PRIME OS — 4D Tensor Cipher Forum</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+:root { 
+  --g:#00ff99; 
+  --a:#00ffff; 
+  --b:#000; 
+  --w:#fff;
+  --bg-dark: #001100;
+  --panel-bg: rgba(0, 255, 153, 0.05);
+  --panel-border: rgba(0, 255, 153, 0.3);
+  --text-glow: 0 0 10px var(--g);
+  --surface: #111827;
+  --surface-soft: #0b1020;
+  --muted: #9ca3af;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { 
+  background: var(--b); 
+  color: var(--g); 
+  font-family: 'Courier New', monospace; 
+  height: 100%; 
+  overflow: hidden;
+  text-shadow: var(--text-glow);
+}
+
+/* SCX Compression Layer */
+.scx-packed { 
+  transform: scale(0.1); 
+  opacity: 0.001; 
+  position: absolute; 
+  pointer-events: none; 
+}
+
+/* Main OS Container */
+.os-container { 
+  display: grid;
+  grid-template-columns: 280px 1fr 400px;
+  grid-template-rows: 60px 1fr 200px;
+  grid-template-areas: 
+    "header header header"
+    "sidebar main inspector"
+    "terminal terminal terminal";
+  height: 100vh;
+  gap: 1px;
+  background: var(--g);
+}
+
+/* Header */
+.os-header { 
+  grid-area: header; 
+  background: #000; 
+  border-bottom: 2px solid var(--g); 
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  box-shadow: 0 0 15px rgba(0, 255, 153, 0.2);
+}
+
+.led {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--g);
+  box-shadow: 0 0 8px var(--g);
+  display: inline-block;
+  margin-right: 8px;
+  animation: blink 2s infinite;
+}
+
+@keyframes blink { 0%,50% { opacity: 1; } 51%,100% { opacity: 0.3; } }
+
+/* Sidebar */
+.os-sidebar { 
+  grid-area: sidebar; 
+  background: #000; 
+  border-right: 2px solid var(--g); 
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.nav-item {
+  padding: 0.75rem 1rem;
+  margin: 0.25rem 0;
+  border-left: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.nav-item:hover {
+  border-left-color: var(--g);
+  background: rgba(0, 255, 153, 0.1);
+  padding-left: 1.5rem;
+}
+
+.nav-item.active {
+  border-left-color: var(--g);
+  background: rgba(0, 255, 153, 0.15);
+}
+
+/* Main Content */
+.os-main { 
+  grid-area: main; 
+  background: #000; 
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+/* Inspector */
+.os-inspector { 
+  grid-area: inspector; 
+  background: #000; 
+  border-left: 2px solid var(--g); 
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+/* Terminal */
+.os-terminal { 
+  grid-area: terminal; 
+  background: #000; 
+  border-top: 2px solid var(--g); 
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.terminal-output {
+  flex: 1;
+  overflow-y: auto;
+  font-family: monospace;
+  font-size: 0.75rem;
+  margin-bottom: 0.5rem;
+  background: #001100;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+.terminal-input-line {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.terminal-prompt {
+  color: var(--g);
+  font-weight: bold;
+}
+
+.terminal-field {
+  flex: 1;
+  background: #001100;
+  border: 1px solid var(--g);
+  color: var(--g);
+  padding: 0.5rem;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+/* Panel Components */
+.panel { 
+  border: 1px solid var(--panel-border); 
+  border-radius: 8px; 
+  padding: 1rem; 
+  margin-bottom: 1rem; 
+  background: var(--panel-bg); 
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(0, 255, 153, 0.1);
+}
+
+.panel:hover {
+  box-shadow: 0 0 15px rgba(0, 255, 153, 0.2);
+  border-color: var(--g);
+}
+
+.btn { 
+  background: var(--g); 
+  color: #000; 
+  border: none; 
+  padding: 0.5rem 1rem; 
+  border-radius: 4px; 
+  cursor: pointer; 
+  font-weight: bold; 
+  transition: all 0.2s; 
+  text-shadow: none;
+  box-shadow: 0 0 10px rgba(0, 255, 153, 0.3);
+}
+
+.btn:hover { 
+  background: var(--a); 
+  transform: translateY(-2px); 
+  box-shadow: 0 0 15px rgba(0, 255, 153, 0.5);
+}
+
+.btn-primary { background: var(--g); color: #000; }
+.btn-binary { background: #0066ff; color: #fff; }
+.btn-text { background: #ff9900; color: #000; }
+
+/* Tensor Container */
+.tensor-container {
+  width: 100%;
+  height: 300px;
+  background: #000;
+  border: 2px solid var(--g);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  margin: 1rem 0;
+}
+
+#tensorCanvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.tensor-overlay {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(0, 20, 0, 0.8);
+  border: 1px solid var(--g);
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-size: 0.7rem;
+  color: var(--g);
+  z-index: 10;
+}
+
+/* Mode Toggle */
+.mode-toggle {
+  display: flex;
+  gap: 4px;
+  background: #1a1a1a;
+  padding: 4px;
+  border-radius: 8px;
+  border: 1px solid var(--g);
+}
+
+.mode-btn {
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.7rem;
+  transition: all 0.2s;
+  color: var(--muted);
+}
+
+.mode-btn.active {
+  background: var(--g);
+  color: #000;
+}
+
+/* Binary/Text Badges */
+.binary-badge {
+  background: #0066ff;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.6rem;
+  font-weight: bold;
+}
+
+.text-badge {
+  background: #ff9900;
+  color: #000;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.6rem;
+  font-weight: bold;
+}
+
+.cipher-badge {
+  background: var(--g);
+  color: #000;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.6rem;
+  font-weight: bold;
+}
+
+/* Topic Items */
+.topic-item {
+  padding: 1rem;
+  border: 1px solid var(--panel-border);
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.topic-item:hover {
+  border-color: var(--g);
+  background: rgba(0, 255, 153, 0.05);
+  transform: translateX(5px);
+}
+
+/* Message Styling */
+.message {
+  padding: 0.75rem;
+  margin: 0.5rem 0;
+  border-radius: 4px;
+}
+
+.message.user {
+  background: #1a1a1a;
+  border-left: 3px solid var(--g);
+}
+
+.message.agent {
+  background: #1a2a1a;
+  border-left: 3px solid var(--a);
+}
+
+/* Progress Indicators */
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  background: #1a1a1a;
+  border-radius: 2px;
+  overflow: hidden;
+  margin: 0.5rem 0;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--g);
+  width: 0%;
+  transition: width 0.3s;
+  box-shadow: 0 0 8px var(--g);
+}
+
+.weight-indicator {
+  display: inline-block;
+  width: 60px;
+  height: 6px;
+  background: #2a2a2a;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-left: 8px;
+}
+
+.weight-fill {
+  height: 100%;
+  background: var(--g);
+  transition: width 0.3s;
+}
+
+/* Statistics */
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--g);
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+/* Modal */
+.modal { 
+  display: none; 
+  position: fixed; 
+  top: 0; left: 0; 
+  width: 100%; height: 100%; 
+  background: rgba(0,0,0,0.9); 
+  z-index: 1000; 
+  align-items: center; 
+  justify-content: center; 
+  padding: 2rem; 
+}
+
+.modal-content { 
+  background: #000; 
+  border: 2px solid var(--g); 
+  padding: 2rem; 
+  max-width: 600px; 
+  width: 100%; 
+  max-height: 80vh; 
+  overflow-y: auto; 
+  border-radius: 8px; 
+  box-shadow: 0 0 30px rgba(0, 255, 153, 0.3);
+}
+
+.field { margin-bottom: 1rem; }
+.field input, .field textarea, .field select { 
+  width: 100%; 
+  padding: 0.75rem; 
+  border-radius: 4px; 
+  border: 1px solid var(--g); 
+  background: #001100; 
+  color: var(--g); 
+  font-family: inherit; 
+}
+
+/* Utility */
+.hidden { display: none !important; }
+.flex { display: flex; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.gap-sm { gap: 0.5rem; }
+.gap-md { gap: 1rem; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-4 { margin-top: 1rem; }
+.mb-4 { margin-bottom: 1rem; }
+.text-glow { color: var(--g); }
+.text-aqua { color: var(--a); }
+.text-muted { color: var(--muted); }
+.w-full { width: 100%; }
+.text-center { text-align: center; }
+.pad-lg { padding: 1rem; }
+.pad-md { padding: 0.5rem; }
+.col { display: flex; flex-direction: column; }
+.small { font-size: 0.85rem; color: var(--muted); }
+.ml-2 { margin-left: 0.5rem; }
+.text-xs { font-size: 0.75rem; }
+.text-sm { font-size: 0.85rem; }
+.text-md { font-size: 1rem; }
+.text-lg { font-size: 1.125rem; }
+.grid { display: grid; }
+</style>
+</head>
+<body>
+
+<!-- Boot Screen -->
+<div id="boot" style="position:fixed; inset:0; background:#000; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999;">
+  <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDEyMCAxMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiByeD0iMTUiIGZpbGw9IiMwMDAiLz4KPGNpcmNsZSBjeD0iNjAiIGN5PSI2MCIgcj0iMjAiIGZpbGw9IiMwMGZmOTkiIGZpbGwtb3BhY2l0eT0iMC4yIi8+CjxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjE1IiBmaWxsPSJub25lIiBzdHJva2U9IiMwMGZmOTkiIHN0cm9rZS13aWR0aD0iMyIvPgo8Y2lyY2xlIGN4PSI2MCIgY3k9IjYwIiByPSI4IiBmaWxsPSIjMDBmZjk5IiBmaWxsLW9wYWNpdHk9IjAuNSIvPgo8L3N2Zz4K" alt="ASX" style="width:120px; filter:drop-shadow(0 0 20px var(--a)); animation:pulse 2s ease-in-out infinite;">
+  <div style="text-align:center;">
+    <div style="font-size:1.2rem; margin-bottom:1rem; text-shadow:0 0 15px var(--a);">ASX PRIME OS — 4D TENSOR CIPHER</div>
+    <div class="small">Initializing quantum tensor field...</div>
+    <div class="progress-bar" style="width:300px; margin:1rem auto;">
+      <div class="progress-fill" id="boot-progress" style="width:0%"></div>
+    </div>
+    <div class="small" id="boot-status">Loading 4D tensor engine</div>
+  </div>
+</div>
+
+<!-- Main OS Container -->
+<div id="app" style="display:none;">
+  <div class="os-container">
+    
+    <!-- HEADER -->
+    <div class="os-header">
+      <div class="flex items-center gap-md">
+        <span class="led"></span>
+        <span class="text-glow text-lg">ASX PRIME OS</span>
+        <span class="text-muted text-sm">4D Tensor • SCX Cipher • Forum</span>
+      </div>
+      <div class="flex items-center gap-md">
+        <div class="mode-toggle">
+          <div class="mode-btn active" data-mode="hybrid">🌐 Hybrid</div>
+          <div class="mode-btn" data-mode="text">📝 Text</div>
+          <div class="mode-btn" data-mode="binary">⚡ Binary</div>
+        </div>
+        <span class="text-xs text-muted" id="tensorStats">4D [16×16×16×16]</span>
+        <button class="btn btn-primary" id="createTopicBtn">✚ New Topic</button>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="os-sidebar">
+      <div class="text-glow text-md pad-md">🧠 4D TENSOR SYSTEMS</div>
+      <div class="nav-item active" data-view="forum">📚 Forum</div>
+      <div class="nav-item" data-view="tensor">🧊 4D Visualization</div>
+      <div class="nav-item" data-view="binary">⚡ Binary Layer</div>
+      <div class="nav-item" data-view="text">📝 Text Layer</div>
+      <div class="nav-item" data-view="hybrid">🌐 Hybrid Weights</div>
+      <div class="nav-item" data-view="cipher">🔐 SCX Cipher</div>
+      <div class="nav-item" data-view="inference">⚡ Weighted Inference</div>
+      
+      <div class="text-glow text-md pad-md mt-4">📊 TENSOR METRICS</div>
+      <div class="nav-item" data-view="compression">📦 Compression</div>
+      <div class="nav-item" data-view="entropy">🔀 Entropy Map</div>
+      <div class="nav-item" data-view="weights">⚖️ Weight Fields</div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="os-main">
+      <!-- FORUM VIEW -->
+      <div id="forumView" class="view active">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-glow">📚 ASX Forum</h2>
+          <select id="categoryFilter" class="btn">
+            <option value="">All Categories</option>
+          </select>
+        </div>
+        
+        <input type="text" class="terminal-field w-full mb-4" id="searchForum" placeholder="Search topics...">
+        
+        <div id="forumTopics" class="col gap-sm">
+          <div class="text-muted text-center pad-lg">Loading forum topics...</div>
+        </div>
+      </div>
+      
+      <!-- TENSOR VIEW -->
+      <div id="tensorView" class="view hidden">
+        <h2 class="text-glow mb-4">🧊 4D Tensor Field [16×16×16×16]</h2>
+        
+        <div class="tensor-container">
+          <div class="tensor-overlay" id="tensorOverlay">4D Projection: hybrid layer • t=8 slice</div>
+          <canvas id="tensorCanvas"></canvas>
+        </div>
+        
+        <div class="flex gap-md mt-3">
+          <div class="stat-item">
+            <div class="stat-value" id="tensorDensity">0.00</div>
+            <div class="stat-label">Embedding Density</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="tensorEntropy">0.00</div>
+            <div class="stat-label">Spatial Entropy</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="tensorClusters">0</div>
+            <div class="stat-label">Weight Clusters</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- BINARY VIEW -->
+      <div id="binaryView" class="view hidden">
+        <h2 class="text-aqua mb-4">⚡ Binary Tensor Layer</h2>
+        <div class="panel">
+          <div class="flex justify-between">
+            <span>Binary Encoding [16×16×16×16]</span>
+            <span class="binary-badge">8-bit</span>
+          </div>
+          <div class="binary-row mt-3" id="binaryDisplay">
+            10110010 11001101 10101011 00110011<br>
+            01101101 10110110 11001100 10101010
+          </div>
+          <div class="progress-bar mt-3">
+            <div class="progress-fill" id="binaryDensity" style="width:73%"></div>
+          </div>
+          <div id="binaryTopics" class="mt-3"></div>
+        </div>
+      </div>
+      
+      <!-- TEXT VIEW -->
+      <div id="textView" class="view hidden">
+        <h2 class="text-weight mb-4">📝 Text Tensor Layer</h2>
+        <div class="panel">
+          <div class="flex justify-between">
+            <span>Text Encoding [16×16×16×16]</span>
+            <span class="text-badge">UTF-16</span>
+          </div>
+          <div class="hex-row mt-3" id="textDisplay">
+            0x48 0x65 0x6C 0x6C 0x6F 0x20 0x41 0x53 0x58
+          </div>
+          <div class="progress-bar mt-3">
+            <div class="progress-fill" id="textDensity" style="width:62%"></div>
+          </div>
+          <div id="textTopics" class="mt-3"></div>
+        </div>
+      </div>
+      
+      <!-- HYBRID VIEW -->
+      <div id="hybridView" class="view hidden">
+        <h2 class="text-glow mb-4">🌐 Hybrid Tensor [α·text + β·binary]</h2>
+        <div class="panel">
+          <div class="flex justify-between">
+            <span>Weighted Combination</span>
+            <div>
+              <span class="binary-badge">α=0.6</span>
+              <span class="text-badge ml-2">β=0.4</span>
+            </div>
+          </div>
+          <div id="hybridTopics" class="mt-3"></div>
+        </div>
+      </div>
+      
+      <!-- CIPHER VIEW -->
+      <div id="cipherView" class="view hidden">
+        <h2 class="text-glow mb-4">🔐 SCX Cipher Security</h2>
+        <div class="panel">
+          <div class="flex justify-between">
+            <span>Active Cipher Level</span>
+            <span class="cipher-badge">L3</span>
+          </div>
+          <div class="cipher-cheatsheet mt-3">
+            <div><span class="cipher-symbol">(?)</span> IF condition</div>
+            <div><span class="cipher-symbol">(∴)</span> THEN action</div>
+            <div><span class="cipher-symbol">(¬)</span> ELSE action</div>
+            <div><span class="cipher-symbol">(⊕)</span> AND continue</div>
+            <div><span class="cipher-symbol">(🔐)</span> ENCRYPT data</div>
+            <div><span class="cipher-symbol">(🔓)</span> DECRYPT data</div>
+          </div>
+          <div class="mt-3">
+            <label>Cipher Command:</label>
+            <input type="text" id="cipherInput" class="terminal-field" placeholder="(🔐) secure_data">
+            <button class="btn btn-primary mt-2" onclick="executeCipherCommand()">Execute</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- INFERENCE VIEW -->
+      <div id="inferenceView" class="view hidden">
+        <h2 class="text-glow mb-4">⚡ Weighted Inference</h2>
+        <div class="flex gap-md">
+          <div class="stat-item">
+            <div class="stat-value" id="inferenceWeight">0.00</div>
+            <div class="stat-label">Weight</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="inferenceConfidence">0.00</div>
+            <div class="stat-label">Confidence</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="inferenceBinary">0.00</div>
+            <div class="stat-label">Binary</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="inferenceText">0.00</div>
+            <div class="stat-label">Text</div>
+          </div>
+        </div>
+        <div id="weightedResponses" class="mt-4"></div>
+      </div>
+      
+      <!-- COMPRESSION VIEW -->
+      <div id="compressionView" class="view hidden">
+        <h2 class="text-glow mb-4">📦 Tensor Compression</h2>
+        <div class="panel">
+          <div class="flex justify-between"><span>Raw Size:</span><span class="text-glow">2.1 MB</span></div>
+          <div class="flex justify-between mt-2"><span>Binary Compressed:</span><span class="text-aqua">168 KB (8:1)</span></div>
+          <div class="flex justify-between mt-2"><span>Text Compressed:</span><span class="text-weight">420 KB (5:1)</span></div>
+          <div class="flex justify-between mt-2"><span>Hybrid Optimized:</span><span class="text-glow">294 KB (7:1)</span></div>
+        </div>
+      </div>
+      
+      <!-- ENTROPY VIEW -->
+      <div id="entropyView" class="view hidden">
+        <h2 class="text-glow mb-4">🔀 Entropy Map</h2>
+        <div class="panel">
+          <div class="flex justify-between"><span>Binary Entropy:</span><span class="text-aqua">0.89 bits/symbol</span></div>
+          <div class="flex justify-between mt-2"><span>Text Entropy:</span><span class="text-weight">4.21 bits/symbol</span></div>
+          <div class="flex justify-between mt-2"><span>Hybrid Entropy:</span><span class="text-glow">2.56 bits/symbol</span></div>
+        </div>
+      </div>
+      
+      <!-- WEIGHTS VIEW -->
+      <div id="weightsView" class="view hidden">
+        <h2 class="text-glow mb-4">⚖️ Weight Fields</h2>
+        <div id="weightFieldsGrid" class="grid gap-sm"></div>
+      </div>
+    </div>
+
+    <!-- INSPECTOR -->
+    <div class="os-inspector">
+      <div class="text-glow text-md mb-3">🔍 4D TENSOR INSPECTOR</div>
+      
+      <div class="panel">
+        <div class="flex justify-between">
+          <span class="text-muted">Tensor Dims</span>
+          <span class="text-glow" id="tensorDims">16×16×16×16</span>
+        </div>
+        <div class="flex justify-between mt-1">
+          <span class="text-muted">Total Cells</span>
+          <span class="text-glow" id="totalCells">65,536</span>
+        </div>
+      </div>
+      
+      <div class="panel">
+        <div class="flex justify-between">
+          <span class="text-muted">Binary Cells</span>
+          <span class="text-aqua" id="binaryCells">0</span>
+        </div>
+        <div class="weight-indicator">
+          <div class="weight-fill" id="binaryPercent" style="width:0%"></div>
+        </div>
+      </div>
+      
+      <div class="panel">
+        <div class="flex justify-between">
+          <span class="text-muted">Text Cells</span>
+          <span class="text-weight" id="textCells">0</span>
+        </div>
+        <div class="weight-indicator">
+          <div class="weight-fill" id="textPercent" style="width:0%"></div>
+        </div>
+      </div>
+      
+      <div class="panel">
+        <div class="flex justify-between">
+          <span class="text-muted">Hybrid Cells</span>
+          <span class="text-glow" id="hybridCells">0</span>
+        </div>
+        <div class="weight-indicator">
+          <div class="weight-fill" id="hybridPercent" style="width:0%"></div>
+        </div>
+      </div>
+      
+      <div class="panel">
+        <div class="flex justify-between">
+          <span class="text-muted">Active Topics</span>
+          <span class="text-glow" id="activeTopics">0</span>
+        </div>
+        <div class="flex justify-between mt-1">
+          <span class="text-muted">Cipher Level</span>
+          <span class="cipher-badge" id="cipherLevel">L3</span>
+        </div>
+      </div>
+      
+      <div class="scx-bytecode mt-3">
+        <strong>4D Operations:</strong><br>
+        <span id="activeOps">Binary • Text • Hybrid • Cipher</span>
+      </div>
+    </div>
+
+    <!-- TERMINAL -->
+    <div class="os-terminal">
+      <div class="terminal-output" id="terminalOutput">
+        <div class="terminal-line">> ASX PRIME OS 4D Tensor Edition</div>
+        <div class="terminal-line">> 4D Tensor Field: [16,16,16,16] = 65,536 cells</div>
+        <div class="terminal-line">> Type 'help' for available commands</div>
+      </div>
+      
+      <div class="terminal-input-line">
+        <span class="terminal-prompt">$</span>
+        <input type="text" class="terminal-field" id="terminalInput" placeholder="Enter command...">
+        <button class="btn" id="terminalSendBtn">Run</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="modal" id="createTopicModal">
+  <div class="modal-content">
+    <div class="flex justify-between items-center mb-4">
+      <strong class="text-glow">Create New Topic</strong>
+      <button class="btn" onclick="Modal.hide('createTopicModal')">✕</button>
+    </div>
+    <form id="topicForm">
+      <div class="field">
+        <input name="title" placeholder="Topic Title" required>
+      </div>
+      <div class="field">
+        <input name="author" placeholder="Your Name" value="User">
+      </div>
+      <div class="field">
+        <textarea name="content" placeholder="Topic Content" rows="4" required></textarea>
+      </div>
+      <div class="field">
+        <select name="category" id="topicCategorySelect" required>
+          <option value="">Select Category</option>
+        </select>
+      </div>
+      <div class="flex justify-end gap-md">
+        <button type="button" class="btn" onclick="Modal.hide('createTopicModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Create Topic</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal" id="topicViewModal">
+  <div class="modal-content">
+    <div class="flex justify-between items-center mb-4">
+      <strong class="text-glow" id="topicViewTitle">Topic</strong>
+      <button class="btn" onclick="Modal.hide('topicViewModal')">✕</button>
+    </div>
+    <div id="topicViewContent"></div>
+  </div>
+</div>
+
+<!-- SCX Packed Engine -->
+<div class="scx-packed">
+<script type="application/scx" data-module="tensor-cipher">
+((()=>{
+  // 4D Tensor Cipher Engine
+  class TensorCipherEngine {
+    constructor() {
+      this.dimensions = [16, 16, 16, 16];
+      this.totalCells = 16 * 16 * 16 * 16;
+      this.binary = new Uint8Array(this.totalCells);
+      this.text = new Uint16Array(this.totalCells);
+      this.weights = new Float32Array(this.totalCells);
+      this.embeddings = new Map();
+      this.cipherLevel = 3;
+      this.mode = 'hybrid';
+    }
+    
+    init() {
+      for (let i = 0; i < this.totalCells; i++) {
+        this.binary[i] = Math.floor(Math.random() * 256);
+        this.text[i] = 32 + Math.floor(Math.random() * 96);
+        this.weights[i] = Math.random();
+      }
+      return this;
+    }
+    
+    embedTopic(topic) {
+      const w = Math.floor(Math.random() * 16);
+      const x = Math.floor(Math.random() * 16);
+      const y = Math.floor(Math.random() * 16);
+      const z = Math.floor(Math.random() * 16);
+      const idx = ((w * 16 + x) * 16 + y) * 16 + z;
+      
+      // Binary encoding of title
+      for (let i = 0; i < Math.min(topic.title.length, 8); i++) {
+        this.binary[idx + i] = topic.title.charCodeAt(i) % 256;
+      }
+      
+      // Text encoding of content
+      for (let i = 0; i < Math.min(topic.content.length, 16); i++) {
+        this.text[idx + i * 16] = topic.content.charCodeAt(i);
+      }
+      
+      this.weights[idx] = Math.min(1.0, (topic.replies?.length || 0) / 10);
+      
+      const embedding = {
+        id: topic.id,
+        title: topic.title,
+        position: [w, x, y, z],
+        weight: this.weights[idx],
+        binaryPrefix: this.binary.slice(idx, idx + 8),
+        textPrefix: this.text.slice(idx, idx + 8)
+      };
+      
+      this.embeddings.set(topic.id, embedding);
+      return embedding;
+    }
+    
+    getWeightedResponse(query, mode = 'hybrid') {
+      const queryBinary = this.textToBinary(query);
+      const results = [];
+      
+      for (const [id, emb] of this.embeddings) {
+        let binarySim = 0;
+        for (let i = 0; i < 8; i++) {
+          if (emb.binaryPrefix[i] === queryBinary[i]) binarySim++;
+        }
+        binarySim /= 8;
+        
+        const textSim = this.textSimilarity(query, emb.title);
+        
+        let weight;
+        if (mode === 'binary') weight = binarySim;
+        else if (mode === 'text') weight = textSim;
+        else weight = 0.6 * textSim + 0.4 * binarySim;
+        
+        results.push({
+          topicId: id,
+          topic: emb.title,
+          weight: weight * emb.weight,
+          binarySim,
+          textSim,
+          confidence: weight
+        });
+      }
+      
+      return results.sort((a, b) => b.weight - a.weight);
+    }
+    
+    textToBinary(text) {
+      const binary = new Array(8).fill(0);
+      for (let i = 0; i < Math.min(text.length, 8); i++) {
+        binary[i] = text.charCodeAt(i) % 256;
+      }
+      return binary;
+    }
+    
+    textSimilarity(a, b) {
+      const wordsA = new Set(a.toLowerCase().split(/\s+/));
+      const wordsB = new Set(b.toLowerCase().split(/\s+/));
+      const intersection = new Set([...wordsA].filter(x => wordsB.has(x)));
+      return intersection.size / Math.max(wordsA.size, wordsB.size) || 0;
+    }
+    
+    getStats() {
+      let binaryActive = 0, textActive = 0;
+      for (let i = 0; i < this.totalCells; i++) {
+        if (this.binary[i] > 0) binaryActive++;
+        if (this.text[i] > 32) textActive++;
+      }
+      return {
+        binaryActive,
+        textActive,
+        hybridActive: (binaryActive + textActive) / 2,
+        total: this.totalCells,
+        embeddedTopics: this.embeddings.size
+      };
+    }
+    
+    // Cipher operations
+    encrypt(data, level = this.cipherLevel) {
+      let encrypted = '';
+      for (let i = 0; i < data.length; i++) {
+        encrypted += String.fromCharCode(data.charCodeAt(i) ^ (level * 0x55));
+      }
+      return btoa(encrypted);
+    }
+    
+    decrypt(data) {
+      const decoded = atob(data);
+      let decrypted = '';
+      for (let i = 0; i < decoded.length; i++) {
+        decrypted += String.fromCharCode(decoded.charCodeAt(i) ^ (this.cipherLevel * 0x55));
+      }
+      return decrypted;
+    }
+    
+    executeCipher(command) {
+      const cmd = command.trim();
+      if (cmd.startsWith('(🔐)')) {
+        const data = cmd.substring(5).trim();
+        return this.encrypt(data);
+      } else if (cmd.startsWith('(🔓)')) {
+        const data = cmd.substring(5).trim();
+        return this.decrypt(data);
+      } else {
+        return { error: 'Unknown cipher command' };
+      }
+    }
+  }
+  
+  window.TensorCipherEngine = TensorCipherEngine;
+  window.tensorEngine = new TensorCipherEngine().init();
+}))();
+</script>
+</div>
+
+<script>
+// Boot Sequence
+let bootProgress = 0;
+const bootMessages = [
+  "Initializing 4D tensor field",
+  "Loading binary layer encoding",
+  "Mounting text layer embeddings",
+  "Calibrating hybrid weights",
+  "Starting SCX cipher engine",
+  "Ready to deploy"
+];
+
+function updateBoot() {
+  const progressBar = document.getElementById('boot-progress');
+  const status = document.getElementById('boot-status');
+  
+  bootProgress++;
+  const progress = (bootProgress / bootMessages.length) * 100;
+  progressBar.style.width = `${progress}%`;
+  
+  if (bootProgress < bootMessages.length) {
+    status.textContent = bootMessages[bootProgress];
+    setTimeout(updateBoot, 300);
+  } else {
+    document.getElementById('boot').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    terminalLog("ASX PRIME OS 4D Tensor Cipher Online");
+    terminalLog(`4D Tensor: [16×16×16×16] = ${tensorEngine.totalCells.toLocaleString()} cells`);
+    
+    // Initialize systems
+    ASXPrimeOS.init();
+  }
+}
+
+// Main OS Class
+class ASXPrimeOS {
+  static categories = [
+    "4D Tensor Computing",
+    "Binary Encoding", 
+    "Text Embeddings",
+    "Hybrid Weights",
+    "SCX Cipher",
+    "Weighted Inference"
+  ];
+
+  static views = ['forum', 'tensor', 'binary', 'text', 'hybrid', 'cipher', 'inference', 'compression', 'entropy', 'weights'];
+  static currentView = 'forum';
+  static topics = [];
+  static currentMode = 'hybrid';
+
+  static init() {
+    this.loadTopics();
+    this.populateCategories();
+    this.setupEventListeners();
+    this.renderForum();
+    this.updateInspectorStats();
+    
+    // Embed existing topics
+    this.topics.forEach(topic => {
+      tensorEngine.embedTopic(topic);
+    });
+    
+    // Setup 3D visualization
+    this.setupTensorVisualization();
+    
+    // Mode toggle
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        this.currentMode = e.target.dataset.mode;
+        this.updateTensorVisualization();
+      });
+    });
+  }
+
+  static setupEventListeners() {
+    // Navigation
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', (e) => {
+        const view = e.target.closest('.nav-item').dataset.view;
+        this.switchView(view);
+      });
+    });
+
+    // Create topic
+    document.getElementById('createTopicBtn').addEventListener('click', () => {
+      Modal.show('createTopicModal');
+    });
+
+    // Topic form
+    document.getElementById('topicForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      this.createTopic(new FormData(e.target));
+    });
+
+    // Search
+    document.getElementById('searchForum').addEventListener('input', () => {
+      this.renderForum();
+    });
+
+    // Category filter
+    document.getElementById('categoryFilter').addEventListener('change', () => {
+      this.renderForum();
+    });
+
+    // Terminal
+    document.getElementById('terminalSendBtn').addEventListener('click', () => {
+      this.processTerminalCommand();
+    });
+
+    document.getElementById('terminalInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') this.processTerminalCommand();
+    });
+
+    // Close modals
+    document.querySelectorAll('.modal').forEach(modal => {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) Modal.hide(modal.id);
+      });
+    });
+
+    // Update stats every 2 seconds
+    setInterval(() => {
+      this.updateInspectorStats();
+    }, 2000);
+  }
+
+  static switchView(view) {
+    if (!this.views.includes(view)) return;
+    
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.classList.toggle('active', item.dataset.view === view);
+    });
+    
+    document.querySelectorAll('.view').forEach(v => {
+      v.classList.toggle('hidden', !v.id.toLowerCase().includes(view));
+    });
+    
+    this.currentView = view;
+    
+    if (view === 'forum') this.renderForum();
+    if (view === 'binary') this.renderBinaryView();
+    if (view === 'text') this.renderTextView();
+    if (view === 'hybrid') this.renderHybridView();
+    if (view === 'inference') this.renderInferenceView();
+  }
+
+  static renderForum() {
+    const container = document.getElementById('forumTopics');
+    const search = document.getElementById('searchForum').value.toLowerCase();
+    const category = document.getElementById('categoryFilter').value;
+    
+    const filtered = this.topics.filter(t => {
+      const matchesSearch = t.title.toLowerCase().includes(search) || 
+                           t.content.toLowerCase().includes(search);
+      const matchesCategory = !category || t.category === category;
+      return matchesSearch && matchesCategory;
+    });
+    
+    if (filtered.length === 0) {
+      container.innerHTML = '<div class="text-muted text-center pad-lg">No topics found</div>';
+      return;
+    }
+    
+    container.innerHTML = filtered.map(topic => `
+      <div class="topic-item" onclick="ASXPrimeOS.viewTopic('${topic.id}')">
+        <div class="flex justify-between items-center">
+          <strong class="text-glow">${topic.title}</strong>
+          <span class="text-xs text-muted">${topic.replies?.length || 0} replies</span>
+        </div>
+        <div class="flex justify-between text-xs text-muted mt-1">
+          <span>${topic.author}</span>
+          <span>${new Date(topic.timestamp).toLocaleDateString()}</span>
+        </div>
+        <div class="text-xs text-muted mt-2">${topic.content.substring(0, 100)}...</div>
+      </div>
+    `).join('');
+    
+    document.getElementById('activeTopics').textContent = this.topics.length;
+  }
+
+  static viewTopic(id) {
+    const topic = this.topics.find(t => t.id === id);
+    if (!topic) return;
+    
+    document.getElementById('topicViewTitle').textContent = topic.title;
+    
+    const repliesHTML = (topic.replies || []).map(r => `
+      <div class="message ${r.isAgent ? 'agent' : 'user'}">
+        <div class="flex items-center gap-sm">
+          <strong>${r.author}</strong>
+          ${r.isAgent ? '<span class="cipher-badge">AI</span>' : ''}
+        </div>
+        <div class="text-sm mt-1">${r.content}</div>
+        <div class="text-xs text-muted mt-1">${new Date(r.timestamp).toLocaleString()}</div>
+      </div>
+    `).join('');
+    
+    document.getElementById('topicViewContent').innerHTML = `
+      <div class="message user">
+        <div class="flex items-center gap-sm">
+          <strong>${topic.author}</strong>
+        </div>
+        <div class="text-sm mt-1">${topic.content}</div>
+        <div class="text-xs text-muted mt-1">${new Date(topic.timestamp).toLocaleString()}</div>
+      </div>
+      ${repliesHTML}
+      <div class="flex gap-md mt-4">
+        <input type="text" class="terminal-field" id="replyInput" placeholder="Add a reply...">
+        <button class="btn btn-primary" onclick="ASXPrimeOS.addReply('${topic.id}')">Reply</button>
+      </div>
+    `;
+    
+    Modal.show('topicViewModal');
+  }
+
+  static addReply(topicId) {
+    const input = document.getElementById('replyInput');
+    const content = input.value.trim();
+    if (!content) return;
+    
+    const topic = this.topics.find(t => t.id === topicId);
+    if (!topic) return;
+    
+    const reply = {
+      author: 'User',
+      content: content,
+      timestamp: new Date().toISOString(),
+      isAgent: false
+    };
+    
+    if (!topic.replies) topic.replies = [];
+    topic.replies.push(reply);
+    
+    this.saveTopics();
+    input.value = '';
+    
+    // Generate AI response
+    setTimeout(() => {
+      const results = tensorEngine.getWeightedResponse(content, this.currentMode);
+      const top = results[0] || {};
+      
+      const agentReply = {
+        author: 'ASX 4D Agent',
+        content: `4D Tensor Analysis:
+• Matched: "${top.topic || 'new'}"
+• Weight: ${(top.weight || 0).toFixed(2)}
+• Binary: ${(top.binarySim || 0).toFixed(2)}
+• Text: ${(top.textSim || 0).toFixed(2)}`,
+        timestamp: new Date().toISOString(),
+        isAgent: true
+      };
+      
+      topic.replies.push(agentReply);
+      this.saveTopics();
+      this.viewTopic(topicId);
+      this.updateInspectorStats();
+    }, 1000);
+  }
+
+  static createTopic(formData) {
+    const topic = {
+      id: 't' + Date.now(),
+      title: formData.get('title'),
+      author: formData.get('author') || 'User',
+      content: formData.get('content'),
+      category: formData.get('category'),
+      timestamp: new Date().toISOString(),
+      replies: []
+    };
+    
+    this.topics.unshift(topic);
+    tensorEngine.embedTopic(topic);
+    this.saveTopics();
+    this.renderForum();
+    Modal.hide('createTopicModal');
+    terminalLog(`Topic created: "${topic.title}"`);
+    
+    // Auto-reply
+    setTimeout(() => {
+      const agentReply = {
+        author: 'ASX 4D Agent',
+        content: `Topic embedded in 4D tensor at [${tensorEngine.embeddings.get(topic.id).position.join(', ')}]`,
+        timestamp: new Date().toISOString(),
+        isAgent: true
+      };
+      topic.replies.push(agentReply);
+      this.saveTopics();
+    }, 1500);
+  }
+
+  static renderBinaryView() {
+    const stats = tensorEngine.getStats();
+    document.getElementById('binaryDensity').style.width = (stats.binaryActive / stats.total * 100) + '%';
+    
+    const topicsDiv = document.getElementById('binaryTopics');
+    topicsDiv.innerHTML = Array.from(tensorEngine.embeddings.values()).slice(0, 5).map(emb => `
+      <div class="flex justify-between items-center mt-2">
+        <span>${emb.title.substring(0, 20)}</span>
+        <span class="text-aqua">${emb.binaryPrefix.slice(0, 4).map(b => b.toString(16).padStart(2, '0')).join(' ')}</span>
+      </div>
+    `).join('');
+  }
+
+  static renderTextView() {
+    const stats = tensorEngine.getStats();
+    document.getElementById('textDensity').style.width = (stats.textActive / stats.total * 100) + '%';
+    
+    const topicsDiv = document.getElementById('textTopics');
+    topicsDiv.innerHTML = Array.from(tensorEngine.embeddings.values()).slice(0, 5).map(emb => `
+      <div class="flex justify-between items-center mt-2">
+        <span>${emb.title.substring(0, 20)}</span>
+        <span class="text-weight">${String.fromCharCode(...emb.textPrefix.slice(0, 4).filter(c => c > 32))}</span>
+      </div>
+    `).join('');
+  }
+
+  static renderHybridView() {
+    const topicsDiv = document.getElementById('hybridTopics');
+    topicsDiv.innerHTML = Array.from(tensorEngine.embeddings.values()).slice(0, 5).map(emb => `
+      <div class="flex justify-between items-center mt-2">
+        <span>${emb.title.substring(0, 20)}</span>
+        <div>
+          <span class="text-aqua">α=${(1 - emb.weight).toFixed(2)}</span>
+          <span class="text-weight ml-2">β=${emb.weight.toFixed(2)}</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  static renderInferenceView() {
+    const sampleQuery = "tensor computing";
+    const results = tensorEngine.getWeightedResponse(sampleQuery, this.currentMode);
+    
+    if (results.length > 0) {
+      document.getElementById('inferenceWeight').textContent = results[0].weight.toFixed(2);
+      document.getElementById('inferenceConfidence').textContent = results[0].confidence.toFixed(2);
+      document.getElementById('inferenceBinary').textContent = results[0].binarySim.toFixed(2);
+      document.getElementById('inferenceText').textContent = results[0].textSim.toFixed(2);
+    }
+    
+    const responsesDiv = document.getElementById('weightedResponses');
+    responsesDiv.innerHTML = results.slice(0, 5).map(r => `
+      <div class="flex justify-between items-center mt-2">
+        <span>${r.topic}</span>
+        <span class="text-glow">${r.weight.toFixed(2)}</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width:${r.confidence * 100}%"></div>
+      </div>
+    `).join('');
+  }
+
+  static updateInspectorStats() {
+    const stats = tensorEngine.getStats();
+    
+    document.getElementById('binaryCells').textContent = stats.binaryActive.toLocaleString();
+    document.getElementById('textCells').textContent = stats.textActive.toLocaleString();
+    document.getElementById('hybridCells').textContent = Math.floor(stats.hybridActive).toLocaleString();
+    
+    const binaryPercent = (stats.binaryActive / stats.total * 100).toFixed(1);
+    const textPercent = (stats.textActive / stats.total * 100).toFixed(1);
+    const hybridPercent = (stats.hybridActive / stats.total * 100).toFixed(1);
+    
+    document.getElementById('binaryPercent').style.width = binaryPercent + '%';
+    document.getElementById('textPercent').style.width = textPercent + '%';
+    document.getElementById('hybridPercent').style.width = hybridPercent + '%';
+    
+    document.getElementById('tensorStats').textContent = `4D [16×16×16×16] • ${stats.binaryActive.toLocaleString()} cells`;
+  }
+
+  static loadTopics() {
+    const saved = localStorage.getItem('asxPrimeTopics');
+    if (saved) {
+      this.topics = JSON.parse(saved);
+    } else {
+      this.topics = [
+        {
+          id: 't1',
+          title: '4D Tensor Fields for Binary Encoding',
+          author: 'Tensor Engineer',
+          content: 'Using [16,16,16,16] 4D tensors to encode binary data with SCX cipher security.',
+          category: '4D Tensor Computing',
+          timestamp: new Date().toISOString(),
+          replies: []
+        },
+        {
+          id: 't2',
+          title: 'Hybrid Weighted Inference with SCX Cipher',
+          author: 'Cipher Expert',
+          content: 'Combining binary and text layers with α+β=1 weighting for secure responses.',
+          category: 'Hybrid Weights',
+          timestamp: new Date().toISOString(),
+          replies: []
+        }
+      ];
+    }
+  }
+
+  static saveTopics() {
+    localStorage.setItem('asxPrimeTopics', JSON.stringify(this.topics));
+  }
+
+  static populateCategories() {
+    const filter = document.getElementById('categoryFilter');
+    const modalSelect = document.getElementById('topicCategorySelect');
+    
+    const options = '<option value="">All Categories</option>' +
+      this.categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+    
+    filter.innerHTML = options;
+    modalSelect.innerHTML = options;
+  }
+
+  static setupTensorVisualization() {
+    const canvas = document.getElementById('tensorCanvas');
+    if (!canvas) return;
+    
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x000000);
+    
+    const camera = new THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+    camera.position.set(20, 20, 20);
+    camera.lookAt(0, 0, 0);
+    
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+    
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0x404040);
+    scene.add(ambientLight);
+    
+    // Create tensor points
+    const geometry = new THREE.BufferGeometry();
+    const positions = [];
+    const colors = [];
+    
+    for (let i = 0; i < 2000; i++) {
+      const x = (Math.random() - 0.5) * 30;
+      const y = (Math.random() - 0.5) * 30;
+      const z = (Math.random() - 0.5) * 30;
+      positions.push(x, y, z);
+      
+      const idx = Math.floor(Math.random() * tensorEngine.totalCells);
+      const binaryVal = tensorEngine.binary[idx] / 255;
+      const textVal = (tensorEngine.text[idx] - 32) / 95;
+      const weight = tensorEngine.weights[idx];
+      
+      let r, g, b;
+      if (this.currentMode === 'binary') {
+        r = binaryVal; g = binaryVal * 0.8; b = 1.0;
+      } else if (this.currentMode === 'text') {
+        r = 1.0; g = textVal * 0.8; b = textVal;
+      } else {
+        r = textVal; g = binaryVal; b = weight;
+      }
+      
+      colors.push(r, g, b);
+    }
+    
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+    geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+    
+    const material = new THREE.PointsMaterial({ size: 0.3, vertexColors: true, transparent: true, opacity: 0.9 });
+    const points = new THREE.Points(geometry, material);
+    scene.add(points);
+    
+    // Grid and axes
+    const gridHelper = new THREE.GridHelper(40, 20, 0x00ff99, 0x404040);
+    scene.add(gridHelper);
+    
+    const axesHelper = new THREE.AxesHelper(20);
+    scene.add(axesHelper);
+    
+    // Animation
+    function animate() {
+      requestAnimationFrame(animate);
+      points.rotation.y += 0.002;
+      renderer.render(scene, camera);
+    }
+    animate();
+    
+    window.tensorScene = { scene, camera, renderer, points };
+  }
+
+  static updateTensorVisualization() {
+    document.getElementById('tensorOverlay').textContent = 
+      `4D Projection: ${this.currentMode} layer • t=8 slice`;
+  }
+
+  static processTerminalCommand() {
+    const input = document.getElementById('terminalInput');
+    const command = input.value.trim();
+    if (!command) return;
+    
+    terminalLog('$ ' + command);
+    
+    if (command === 'help') {
+      terminalLog('Available commands:');
+      terminalLog('  help          - Show this help');
+      terminalLog('  status        - Show tensor status');
+      terminalLog('  stats         - Show detailed stats');
+      terminalLog('  topics        - List all topics');
+      terminalLog('  clear         - Clear terminal');
+    } else if (command === 'status') {
+      const stats = tensorEngine.getStats();
+      terminalLog(`4D Tensor: [16×16×16×16] = ${stats.total} cells`);
+      terminalLog(`Binary Active: ${stats.binaryActive} (${(stats.binaryActive/stats.total*100).toFixed(1)}%)`);
+      terminalLog(`Text Active: ${stats.textActive} (${(stats.textActive/stats.total*100).toFixed(1)}%)`);
+      terminalLog(`Embedded Topics: ${stats.embeddedTopics}`);
+    } else if (command === 'topics') {
+      this.topics.forEach(t => terminalLog(`• ${t.title} (${t.replies?.length || 0} replies)`));
+    } else if (command === 'clear') {
+      document.getElementById('terminalOutput').innerHTML = '';
+      terminalLog('> ASX PRIME OS Terminal');
+    } else {
+      // Try inference
+      const results = tensorEngine.getWeightedResponse(command, this.currentMode);
+      if (results.length > 0) {
+        terminalLog(`Top match: "${results[0].topic}"`);
+        terminalLog(`Weight: ${results[0].weight.toFixed(2)} | Confidence: ${results[0].confidence.toFixed(2)}`);
+      } else {
+        terminalLog('Command not recognized. Type "help" for available commands.');
+      }
+    }
+    
+    input.value = '';
+  }
+}
+
+// Terminal logging
+function terminalLog(message) {
+  const terminal = document.getElementById('terminalOutput');
+  terminal.innerHTML += `<div class="terminal-line">> ${message}</div>`;
+  terminal.scrollTop = terminal.scrollHeight;
+}
+
+// Cipher execution
+function executeCipherCommand() {
+  const input = document.getElementById('cipherInput');
+  const command = input.value.trim();
+  if (!command) return;
+  
+  const result = tensorEngine.executeCipher(command);
+  if (result.error) {
+    terminalLog(`Cipher error: ${result.error}`);
+  } else {
+    terminalLog(`Cipher result: ${result}`);
+  }
+  input.value = '';
+}
+
+// Modal system
+class Modal {
+  static show(id) { document.getElementById(id).style.display = 'flex'; }
+  static hide(id) { document.getElementById(id).style.display = 'none'; }
+}
+
+// Start boot sequence
+setTimeout(updateBoot, 500);
+
+// Make available globally
+window.ASXPrimeOS = ASXPrimeOS;
+window.Modal = Modal;
+</script>
+</body>
 </html>
