@@ -74,9 +74,37 @@ npm run verify
 
 ---
 
+
+## 🧾 SCX4 spec binary vs repository `.b64` text asset
+
+`SCX4` is still a **binary container format** by specification (`magic`, fixed header, section directory, and binary section payloads).
+
+In this repository, the demo model is stored as `demo/model.scx4.b64` for GitHub-friendly review/diff behavior (text instead of a committed raw binary blob).
+
+What this means in practice:
+
+- **Spec/runtime truth**: SCX4 remains binary on disk/in memory for parsing and execution.
+- **Repo storage convenience**: the demo checks in a Base64 text wrapper of the same bytes.
+- **Demo loader behavior**: `demo/scx4-loader.js` fetches `.b64`, decodes it back to the original bytes, then parses it exactly as SCX4 binary.
+- **Build/verify tooling**: `scripts/build-scx4.js` and `scripts/verify-scx4.js` operate on true binary `.scx4` files.
+
+So the `.b64` file is only a source-control transport representation, not a format change to SCX4 itself.
+
+---
+
 ## 📁 Repository Layout
 
 See [`docs/SCXMU_ARCHITECTURE.md`](docs/SCXMU_ARCHITECTURE.md).
+
+For deterministic SCX4 loader behavior and tiny-file hex anatomy, see [`docs/SCX4_LOADER_REFERENCE.md`](docs/SCX4_LOADER_REFERENCE.md).
+
+For the production browser model sizing/constraints, see [`docs/SCXMU_64M_8E_BLUEPRINT.md`](docs/SCXMU_64M_8E_BLUEPRINT.md).
+
+For SCXµ routing-layer semantics and deterministic MoE contracts, see [`docs/SCXMU_MOE_LAYER.md`](docs/SCXMU_MOE_LAYER.md).
+
+For browser execution constraints and canonical INT4 runtime rules, see [`docs/SCXTP_INT4_BROWSER_PROFILE.md`](docs/SCXTP_INT4_BROWSER_PROFILE.md).
+
+For SCX-TP opcode/addressing/binary contracts, see [`docs/SCXT_SPEC.md`](docs/SCXT_SPEC.md) and [`docs/scxt.schema.json`](docs/scxt.schema.json).
 
 ---
 
