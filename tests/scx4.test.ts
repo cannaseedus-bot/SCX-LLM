@@ -15,18 +15,36 @@ describe('scx4 loader', () => {
   });
 
   it('parses section directory bounds safely', () => {
-    const bytes = new Uint8Array(144);
+    const bytes = new Uint8Array(196);
     bytes.set([0x53, 0x43, 0x58, 0x34], 0);
     const view = new DataView(bytes.buffer);
     view.setUint32(0x08, bytes.byteLength, true);
     view.setUint32(0x34, 1, true);
 
     view.setUint32(128, 0x01, true);
-    view.setUint32(132, 140, true);
+    view.setUint32(132, 192, true);
     view.setUint32(136, 4, true);
 
     const sections = parseScx4Sections(bytes.buffer, 1);
     expect(sections[0].type).toBe(0x01);
+  });
+
+  it('rejects overlapping sections', () => {
+    const bytes = new Uint8Array(512);
+    bytes.set([0x53, 0x43, 0x58, 0x34], 0);
+    const view = new DataView(bytes.buffer);
+    view.setUint32(0x08, bytes.byteLength, true);
+    view.setUint32(0x34, 2, true);
+
+    view.setUint32(128, 0x01, true);
+    view.setUint32(132, 192, true);
+    view.setUint32(136, 128, true);
+
+    view.setUint32(144, 0x02, true);
+    view.setUint32(148, 256, true);
+    view.setUint32(152, 64, true);
+
+    expect(() => parseScx4Sections(bytes.buffer, 2)).toThrow(/overlapping/i);
   });
 
   it('loads valid SCX4 metadata', async () => {

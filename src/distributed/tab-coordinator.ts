@@ -1,5 +1,12 @@
 import { createChannel, makeRequestId, type ExpertMessage } from './broadcast';
 
+export const SCXMU_OPCODES = {
+  ROUTE: 0x20,
+  SELECT: 0x21,
+  DISPATCH: 0x22,
+  COMBINE: 0x23,
+} as const;
+
 export type RoutedExpert = {
   expertId: number;
   score: number;
@@ -12,6 +19,17 @@ export type DispatchResult = {
   score: number;
   output: Float32Array;
 };
+
+export function deterministicTopK(routerScores: Float32Array, topK: number): RoutedExpert[] {
+  if (topK <= 0) {
+    return [];
+  }
+
+  const ranked = Array.from(routerScores, (score, expertId) => ({ expertId, score }))
+    .sort((a, b) => (b.score === a.score ? a.expertId - b.expertId : b.score - a.score));
+
+  return ranked.slice(0, Math.min(topK, ranked.length));
+}
 
 export class ExpertTabCoordinator {
   private readonly channel: BroadcastChannel;

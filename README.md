@@ -98,6 +98,14 @@ See [`docs/SCXMU_ARCHITECTURE.md`](docs/SCXMU_ARCHITECTURE.md).
 
 For deterministic SCX4 loader behavior and tiny-file hex anatomy, see [`docs/SCX4_LOADER_REFERENCE.md`](docs/SCX4_LOADER_REFERENCE.md).
 
+For the production browser model sizing/constraints, see [`docs/SCXMU_64M_8E_BLUEPRINT.md`](docs/SCXMU_64M_8E_BLUEPRINT.md).
+
+For SCXµ routing-layer semantics and deterministic MoE contracts, see [`docs/SCXMU_MOE_LAYER.md`](docs/SCXMU_MOE_LAYER.md).
+
+For browser execution constraints and canonical INT4 runtime rules, see [`docs/SCXTP_INT4_BROWSER_PROFILE.md`](docs/SCXTP_INT4_BROWSER_PROFILE.md).
+
+For SCX-TP opcode/addressing/binary contracts, see [`docs/SCXT_SPEC.md`](docs/SCXT_SPEC.md) and [`docs/scxt.schema.json`](docs/scxt.schema.json).
+
 ---
 
 ## 🧪 Testing

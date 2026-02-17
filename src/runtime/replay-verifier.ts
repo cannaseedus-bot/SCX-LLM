@@ -11,6 +11,25 @@ function toBytes(buffer: ArrayBuffer | ArrayBufferView): Uint8Array {
   return new Uint8Array(buffer);
 }
 
+export function toHex(buffer: ArrayBuffer): string {
+  return Array.from(new Uint8Array(buffer))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+export async function routeHash(input: ArrayBuffer, routerWeights: ArrayBuffer, layerId: number): Promise<ArrayBuffer> {
+  const layer = new Uint32Array([layerId]);
+  const layerBytes = toBytes(layer);
+  const combined = new Uint8Array(input.byteLength + routerWeights.byteLength + layerBytes.byteLength);
+
+  let cursor = 0;
+  cursor = append(combined, toBytes(input), cursor);
+  cursor = append(combined, toBytes(routerWeights), cursor);
+  append(combined, layerBytes, cursor);
+
+  return crypto.subtle.digest('SHA-256', combined);
+}
+
 export async function layerHash(
   input: ArrayBuffer,
   router: ArrayBuffer,
@@ -40,19 +59,21 @@ export async function verifyLayerDeterminism(
   return toHex(current) === toHex(baselineHash);
 }
 
-export function toHex(buffer: ArrayBuffer): string {
-  return Array.from(new Uint8Array(buffer))
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('');
-}
-
 export type ReplayTraceEntry = {
   layer: number;
   hashHex: string;
+  kind: 'route' | 'layer';
 };
 
 export class ReplayTrace {
   private readonly entries: ReplayTraceEntry[] = [];
+
+  public async recordRoute(layer: number, input: ArrayBuffer, routerWeights: ArrayBuffer): Promise<ReplayTraceEntry> {
+    const hash = await routeHash(input, routerWeights, layer);
+    const entry = { layer, hashHex: toHex(hash), kind: 'route' as const };
+    this.entries.push(entry);
+    return entry;
+  }
 
   public async record(
     layer: number,
@@ -62,7 +83,7 @@ export class ReplayTrace {
     output: ArrayBuffer,
   ): Promise<ReplayTraceEntry> {
     const hash = await layerHash(input, router, selected, output);
-    const entry = { layer, hashHex: toHex(hash) };
+    const entry = { layer, hashHex: toHex(hash), kind: 'layer' as const };
     this.entries.push(entry);
     return entry;
   }
@@ -77,7 +98,11 @@ export class ReplayTrace {
     }
 
     for (let i = 0; i < expected.length; i += 1) {
-      if (expected[i].layer !== this.entries[i].layer || expected[i].hashHex !== this.entries[i].hashHex) {
+      if (
+        expected[i].layer !== this.entries[i].layer
+        || expected[i].hashHex !== this.entries[i].hashHex
+        || expected[i].kind !== this.entries[i].kind
+      ) {
         return { ok: false, mismatchLayer: expected[i].layer };
       }
     }

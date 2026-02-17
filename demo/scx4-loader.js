@@ -45,9 +45,20 @@ function parseHeader(buffer) {
     throw new Error(`SCX4 file size mismatch: header=${fileSize} actual=${buffer.byteLength}`);
   }
 
+  const major = view.getUint8(0x04);
+  const minor = view.getUint8(0x05);
+  if (major !== 1 || minor > 0) {
+    throw new Error(`Unsupported SCX4 version ${major}.${minor}`);
+  }
+
+  const sectionCount = view.getUint32(0x34, true);
+  if (128 + sectionCount * 16 > buffer.byteLength) {
+    throw new Error('SCX4 section directory out of range');
+  }
+
   return {
     hiddenSize: view.getUint32(0x10, true),
-    sectionCount: view.getUint32(0x34, true),
+    sectionCount,
     experts: view.getUint32(0x20, true),
     blockSize: view.getUint32(0x30, true),
   };
@@ -71,11 +82,24 @@ function parseSections(buffer, sectionCount) {
       merkleOffset: view.getUint32(base + 12, true),
     };
 
+    if (section.offset % 64 !== 0) {
+      throw new Error(`Section ${section.type} is not 64-byte aligned`);
+    }
+
     if (section.offset + section.size > buffer.byteLength) {
       throw new Error(`Invalid section bounds for type ${section.type}`);
     }
 
     sections.push(section);
+  }
+
+  sections.sort((a, b) => a.offset - b.offset);
+  for (let i = 1; i < sections.length; i += 1) {
+    const prev = sections[i - 1];
+    const cur = sections[i];
+    if (cur.offset < prev.offset + prev.size) {
+      throw new Error(`Overlapping sections ${prev.type} and ${cur.type}`);
+    }
   }
 
   return sections;

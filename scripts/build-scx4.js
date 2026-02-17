@@ -13,6 +13,7 @@ const DEFAULT_CONFIG = {
   vocab: 32000,
   seq: 2048,
   block: 128,
+  sharedAttentionBlocks: 8,
   output: 'model/model.scx4',
 };
 
@@ -79,13 +80,18 @@ function blocksToBuffer(fpValues, blockSize) {
   return Buffer.concat(chunks);
 }
 
+
+function alignUp(value, alignment) {
+  return Math.ceil(value / alignment) * alignment;
+}
+
 function buildSections(config) {
   const sections = [];
 
   const embedSize = config.vocab * config.hidden;
   sections.push({ type: 0x01, data: blocksToBuffer(randomMatrix(embedSize), config.block) });
 
-  const attnSize = config.hidden * config.hidden * 4;
+  const attnSize = config.hidden * config.hidden * 4 * config.sharedAttentionBlocks;
   sections.push({ type: 0x02, data: blocksToBuffer(randomMatrix(attnSize), config.block) });
 
   const expertBlobParts = [];
@@ -127,20 +133,32 @@ export function buildSCX4File(sections, config) {
 
   const directory = Buffer.alloc(sections.length * 16);
   const blobs = [];
-  let offset = 128 + directory.length;
+  let offset = alignUp(128 + directory.length, 64);
+  const prePad = Buffer.alloc(offset - (128 + directory.length));
 
   sections.forEach((section, index) => {
     const base = index * 16;
+    const alignedOffset = alignUp(offset, 64);
+    if (alignedOffset !== offset) {
+      blobs.push(Buffer.alloc(alignedOffset - offset));
+      offset = alignedOffset;
+    }
+
     directory.writeUInt32LE(section.type, base);
     directory.writeUInt32LE(offset, base + 4);
     directory.writeUInt32LE(section.data.length, base + 8);
     directory.writeUInt32LE(0, base + 12);
+
     blobs.push(section.data);
     offset += section.data.length;
   });
 
-  const file = Buffer.concat([header, directory, ...blobs]);
-  const merkleRoot = sha256(file);
+  const file = Buffer.concat([header, directory, prePad, ...blobs]);
+  file.writeUInt32LE(file.length, 0x08);
+
+  const digestTarget = Buffer.from(file);
+  digestTarget.fill(0, 0x38, 0x58);
+  const merkleRoot = sha256(digestTarget);
   merkleRoot.copy(file, 0x38);
 
   return file;

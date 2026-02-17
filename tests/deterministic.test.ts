@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ReplayTrace, layerHash, verifyLayerDeterminism } from '../src/runtime/replay-verifier';
+import { ReplayTrace, layerHash, routeHash, verifyLayerDeterminism } from '../src/runtime/replay-verifier';
 
 describe('deterministic replay', () => {
   it('returns same hash for same inputs', async () => {
@@ -12,6 +12,18 @@ describe('deterministic replay', () => {
     const second = await layerHash(input, router, selected, output);
 
     expect(new Uint8Array(first)).toEqual(new Uint8Array(second));
+  });
+
+  it('produces deterministic route hash', async () => {
+    const input = new Uint8Array([3, 3, 3]).buffer;
+    const routerWeights = new Uint8Array([9, 1]).buffer;
+
+    const first = await routeHash(input, routerWeights, 4);
+    const second = await routeHash(input, routerWeights, 4);
+    const changedLayer = await routeHash(input, routerWeights, 5);
+
+    expect(new Uint8Array(first)).toEqual(new Uint8Array(second));
+    expect(new Uint8Array(first)).not.toEqual(new Uint8Array(changedLayer));
   });
 
   it('detects mismatch against baseline hash', async () => {
@@ -35,15 +47,19 @@ describe('deterministic replay', () => {
     expect(changed).toBe(false);
   });
 
-  it('records and compares replay traces', async () => {
+  it('records route+layer trace entries and compares', async () => {
     const trace = new ReplayTrace();
     const input = new Uint8Array([1]).buffer;
     const router = new Uint8Array([2]).buffer;
     const selected = new Uint32Array([1]);
     const output = new Uint8Array([3]).buffer;
 
-    const entry = await trace.record(0, input, router, selected, output);
-    const comparison = trace.compare([{ layer: 0, hashHex: entry.hashHex }]);
+    const routeEntry = await trace.recordRoute(0, input, router);
+    const layerEntry = await trace.record(0, input, router, selected, output);
+    const comparison = trace.compare([
+      { layer: 0, hashHex: routeEntry.hashHex, kind: 'route' },
+      { layer: 0, hashHex: layerEntry.hashHex, kind: 'layer' },
+    ]);
 
     expect(comparison.ok).toBe(true);
   });
